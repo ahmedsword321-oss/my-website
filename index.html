@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InfoVault — Buy & Sell Knowledge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0f;
+    --ink-2: #3a3840;
+    --ink-3: #7b7885;
+    --surface: #faf9f7;
+    --surface-2: #f2f0ec;
+    --surface-3: #e8e5df;
+    --accent: #c84b1c;
+    --accent-light: #fdf0eb;
+    --accent-2: #1c6bc8;
+    --accent-2-light: #ebf2fd;
+    --gold: #b07d10;
+    --gold-light: #fdf6e0;
+    --green: #1a7a4a;
+    --green-light: #e8f7ef;
+    --border: rgba(13,13,15,0.1);
+    --border-strong: rgba(13,13,15,0.2);
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,249,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem; font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .nav-links { display: flex; align-items: center; gap: 0; }
+  .nav-links a {
+    font-size: 0.85rem; color: var(--ink-2); text-decoration: none;
+    padding: 8px 16px; border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+    font-weight: 500;
+  }
+  .nav-links a:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-cta {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .btn {
+    font-family: 'Syne', sans-serif; font-weight: 600;
+    font-size: 0.85rem; cursor: pointer; border: none;
+    padding: 9px 20px; border-radius: 8px;
+    transition: all 0.15s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--border-strong); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #a63c14; }
+  .btn-secondary { background: var(--ink); color: #fff; }
+  .btn-secondary:hover { background: var(--ink-2); }
+
+  /* HERO */
+  .hero {
+    padding: 80px 2rem 60px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold-light); color: var(--gold);
+    font-size: 0.75rem; font-weight: 600;
+    padding: 5px 12px; border-radius: 100px;
+    margin-bottom: 20px; letter-spacing: 0.04em;
+    border: 1px solid rgba(176,125,16,0.2);
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 3.2rem; line-height: 1.1;
+    font-weight: 600; letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero p {
+    font-size: 1rem; color: var(--ink-2); line-height: 1.7;
+    margin-bottom: 32px; font-weight: 400;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-lg { padding: 13px 28px; font-size: 0.95rem; border-radius: 10px; }
+  .hero-stats {
+    display: flex; gap: 28px; margin-top: 40px; padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item { }
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.4rem; font-weight: 500; color: var(--ink);
+  }
+  .stat-label { font-size: 0.78rem; color: var(--ink-3); font-weight: 500; }
+
+  .hero-visual {
+    position: relative;
+  }
+  .featured-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px; box-shadow: var(--shadow-md);
+    position: relative; overflow: hidden;
+  }
+  .featured-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+  }
+  .card-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em;
+    padding: 4px 10px; border-radius: 100px;
+    text-transform: uppercase;
+    background: var(--accent-light); color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .featured-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem; font-weight: 600; color: var(--ink);
+    line-height: 1.35; margin-bottom: 12px;
+  }
+  .featured-desc {
+    font-size: 0.83rem; color: var(--ink-2); line-height: 1.6; margin-bottom: 18px;
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.78rem; color: var(--ink-3); margin-bottom: 16px;
+  }
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+  .card-price-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .price { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: var(--ink); }
+  .price-label { font-size: 0.72rem; color: var(--ink-3); font-weight: 500; display: block; }
+  .btn-buy { background: var(--ink); color: #fff; padding: 10px 20px; font-size: 0.82rem; }
+  .btn-buy:hover { background: var(--accent); }
+  .floating-badge {
+    position: absolute; top: -12px; right: 20px;
+    background: var(--green); color: #fff;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 5px 12px; border-radius: 100px;
+    letter-spacing: 0.03em;
+  }
+  .mini-cards {
+    display: flex; flex-direction: column; gap: 10px; margin-top: 12px;
+  }
+  .mini-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .mini-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .mini-card-info { flex: 1; min-width: 0; }
+  .mini-card-title { font-size: 0.83rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-card-sub { font-size: 0.75rem; color: var(--ink-3); }
+  .mini-card-price { font-family: 'DM Mono', monospace; font-size: 0.88rem; font-weight: 500; color: var(--ink); flex-shrink: 0; }
+
+  /* HOW IT WORKS */
+  .section { padding: 72px 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 600;
+    letter-spacing: -0.03em; color: var(--ink); margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .section-subtitle { font-size: 1rem; color: var(--ink-2); max-width: 500px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+  .step-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 28px;
+    position: relative; overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .step-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; font-weight: 500;
+    color: var(--ink-3); margin-bottom: 16px;
+  }
+  .step-icon-wrap {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .step-card h3 {
+    font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-bottom: 10px;
+  }
+  .step-card p { font-size: 0.86rem; color: var(--ink-2); line-height: 1.65; }
+
+  /* MARKETPLACE */
+  .marketplace-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+  }
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;
+  }
+  .filter-chip {
+    font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 600;
+    padding: 6px 14px; border-radius: 100px;
+    border: 1px solid var(--border-strong); background: transparent;
+    color: var(--ink-2); cursor: pointer; transition: all 0.15s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    background: var(--ink); color: #fff; border-color: var(--ink);
+  }
+  .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .listing-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+  }
+  .listing-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .listing-thumb {
+    height: 130px; display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .listing-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+  .listing-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tag {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 100px;
+  }
+  .listing-title { font-size: 0.95rem; font-weight: 600; color: var(--ink); line-height: 1.35; margin-bottom: 8px; }
+  .listing-desc { font-size: 0.8rem; color: var(--ink-2); line-height: 1.6; margin-bottom: 14px; flex: 1; }
+  .listing-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .listing-price { font-family: 'DM Mono', monospace; font-size: 1.05rem; font-weight: 500; color: var(--ink); }
+  .listing-seller {
+    display: flex; align-items: center; gap: 7px; font-size: 0.75rem; color: var(--ink-3);
+  }
+  .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .rating { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--gold); }
+
+  /* SELL CTA */
+  .sell-cta {
+    background: var(--ink); border-radius: var(--radius-lg);
+    padding: 60px 48px;
+    display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+    margin: 0 2rem 72px;
+    max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  .sell-cta h2 {
+    font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600;
+    color: #fff; letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  .sell-cta p { font-size: 0.95rem; color: rgba(255,255,255,0.6); }
+  .btn-white { background: #fff; color: var(--ink); }
+  .btn-white:hover { background: var(--surface-2); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(13,13,15,0.5); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: var(--radius-lg);
+    width: 100%; max-width: 520px; max-height: 90vh;
+    overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .modal-body { padding: 24px 28px; }
+  .modal-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); }
+  .modal-sub { font-size: 0.83rem; color: var(--ink-3); margin-top: 4px; }
+  .close-btn {
+    background: none; border: none; cursor: pointer; color: var(--ink-3);
+    font-size: 1.2rem; padding: 4px; border-radius: 6px; transition: background 0.15s;
+  }
+  .close-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .form-group { margin-bottom: 18px; }
+  .form-label { font-size: 0.82rem; font-weight: 600; color: var(--ink-2); margin-bottom: 7px; display: block; }
+  .form-control {
+    width: 100%; padding: 10px 14px; border-radius: 9px;
+    border: 1px solid var(--border-strong); font-family: 'Syne', sans-serif;
+    font-size: 0.88rem; color: var(--ink); background: var(--surface);
+    outline: none; transition: border-color 0.15s;
+  }
+  .form-control:focus { border-color: var(--accent); }
+  textarea.form-control { resize: vertical; min-height: 90px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  select.form-control { cursor: pointer; }
+  .form-hint { font-size: 0.75rem; color: var(--ink-3); margin-top: 5px; }
+  .modal-footer {
+    padding: 18px 28px 24px;
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .purchase-summary {
+    background: var(--surface-2); border-radius: var(--radius); padding: 18px;
+    margin-bottom: 20px;
+  }
+  .purchase-row {
+    display: flex; justify-content: space-between; font-size: 0.85rem;
+    padding: 5px 0; color: var(--ink-2);
+  }
+  .purchase-row.total {
+    border-top: 1px solid var(--border-strong); margin-top: 10px; padding-top: 12px;
+    font-size: 1rem; font-weight: 600; color: var(--ink);
+    font-family: 'DM Mono', monospace;
+  }
+  .payment-methods { display: flex; gap: 8px; margin-bottom: 18px; }
+  .pay-method {
+    flex: 1; padding: 10px; border: 1px solid var(--border-strong);
+    border-radius: 9px; text-align: center; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600; color: var(--ink-2);
+    transition: all 0.15s;
+  }
+  .pay-method.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .trust-badges { display: flex; gap: 16px; font-size: 0.75rem; color: var(--ink-3); }
+  .trust-badges span { display: flex; align-items: center; gap: 5px; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,0.5);
+    padding: 48px 2rem 32px;
+  }
+  .footer-inner { max-width: 1100px; margin: 0 auto; }
+  .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer-logo { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
+  .footer-tagline { font-size: 0.83rem; line-height: 1.6; max-width: 220px; }
+  .footer-col h4 { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 8px; }
+  .footer-col ul li a { font-size: 0.83rem; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s; }
+  .footer-col ul li a:hover { color: #fff; }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.78rem;
+  }
+
+  /* Utility */
+  .divider { height: 1px; background: var(--border); max-width: 1100px; margin: 0 auto; }
+  .notification {
+    position: fixed; bottom: 24px; right: 24px; z-index: 2000;
+    background: var(--green); color: #fff; padding: 14px 20px;
+    border-radius: var(--radius); font-size: 0.88rem; font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    display: none; animation: slideUp 0.3s ease;
+  }
+  .notification.show { display: block; }
+
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; }
+    .hero h1 { font-size: 2.2rem; }
+    .steps-grid, .listings-grid { grid-template-columns: 1fr; }
+    .sell-cta { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="scrollTo(0,0)">
+    <div class="logo-dot"></div>
+    InfoVault
+  </div>
+  <div class="nav-links">
+    <a href="#marketplace">Browse</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#" onclick="openSellModal()">Sell</a>
+    <a href="#">Pricing</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn btn-ghost" onclick="openModal('loginModal')">Sign in</button>
+    <button class="btn btn-primary" onclick="openModal('loginModal')">Get started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="padding: 0; max-width: none;">
+  <div class="hero">
+    <div>
+      <div class="hero-badge">
+        <span>✦</span> Trusted knowledge marketplace
+      </div>
+      <h1>Buy & sell <em>valuable</em> information</h1>
+      <p>The premium marketplace for exclusive research, proprietary data, expert insights, and specialized knowledge. Get paid for what you know.</p>
+      <div class="hero-actions">
+        <button class="btn btn-secondary btn-lg" onclick="document.getElementById('marketplace').scrollIntoView({behavior:'smooth'})">Browse listings</button>
+        <button class="btn btn-ghost btn-lg" onclick="openSellModal()">Start selling →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">14,200+</div>
+          <div class="stat-label">Active listings</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">$4.2M</div>
+          <div class="stat-label">Paid to sellers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">38K</div>
+          <div class="stat-label">Members</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="featured-card">
+        <div class="floating-badge">FEATURED</div>
+        <div class="card-tag">📊 Market Research</div>
+        <div class="featured-title">2024 AI Startup Funding Database — 2,400 Deals Analyzed</div>
+        <div class="featured-desc">Comprehensive dataset of every AI startup funding round in 2024. Investor details, valuation estimates, contact data, sector breakdowns.</div>
+        <div class="card-meta">
+          <span>📄 Excel + PDF</span>
+          <span>⭐ 4.9 (312 reviews)</span>
+          <span>↓ 1.2K sold</span>
+        </div>
+        <div class="card-price-row">
+          <div>
+            <span class="price-label">One-time purchase</span>
+            <span class="price">$149</span>
+          </div>
+          <button class="btn btn-buy" onclick="openBuyModal('2024 AI Startup Funding Database', 149)">Buy now</button>
+        </div>
+      </div>
+      <div class="mini-cards">
+        <div class="mini-card">
+          <div class="mini-icon" style="background:#ebf2fd">📈</div>
+          <div class="mini-card-info">
+            <div class="mini-card-title">SaaS Churn Reduction Playbook</div>
+            <div class="mini-card-sub">Strategy guide • 4.8 ⭐</div>
+          </div>
+          <div class="mini-card-price">$79</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-icon" style="background:#e8f7ef">🧬</div>
+          <div class="mini-card-info">
+            <div class="mini-card-title">Biotech Patent Analysis 2023–24</div>
+            <div class="mini-card-sub">Research report • 4.7 ⭐</div>
+          </div>
+          <div class="mini-card-price">$249</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-label">How it works</div>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+    <div>
+      <h2 class="section-title">Simple. Secure. Instant.</h2>
+      <p class="section-subtitle">Turn your expertise and research into recurring income, or find exactly the data you need.</p>
+    </div>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01 — For sellers</div>
+      <div class="step-icon-wrap" style="background: var(--accent-light)">📤</div>
+      <h3>List your knowledge</h3>
+      <p>Upload reports, datasets, templates, guides, or any valuable information. Set your price and describe what buyers will receive.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02 — Get discovered</div>
+      <div class="step-icon-wrap" style="background: var(--gold-light)">🔍</div>
+      <h3>Buyers find you</h3>
+      <p>Your listing is searchable by category, topic, and price. Reviews and ratings help build credibility and drive more sales.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03 — Get paid</div>
+      <div class="step-icon-wrap" style="background: var(--green-light)">💰</div>
+      <h3>Instant payouts</h3>
+      <p>When a buyer purchases your listing, funds are deposited directly to your account. Keep 85% of every sale — we take just 15%.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">01 — For buyers</div>
+      <div class="step-icon-wrap" style="background: var(--accent-2-light)">🧭</div>
+      <h3>Browse & search</h3>
+      <p>Explore thousands of listings across industries. Filter by category, price, format, and seller rating to find exactly what you need.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02 — Buy securely</div>
+      <div class="step-icon-wrap" style="background: var(--surface-3)">🔒</div>
+      <h3>Secure checkout</h3>
+      <p>Pay by card or bank transfer. Every purchase is protected by our buyer guarantee — get a full refund if the listing doesn't match its description.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03 — Access instantly</div>
+      <div class="step-icon-wrap" style="background: var(--gold-light)">⚡</div>
+      <h3>Immediate delivery</h3>
+      <p>Files and documents are delivered instantly after payment. Download anytime from your account dashboard. No waiting, no friction.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MARKETPLACE -->
+<section class="section" id="marketplace">
+  <div class="marketplace-header">
+    <div>
+      <div class="section-label">Marketplace</div>
+      <h2 class="section-title">Browse listings</h2>
+    </div>
+    <button class="btn btn-ghost" onclick="openSellModal()">+ List yours</button>
+  </div>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-chip active" onclick="filterListings(this, 'all')">All categories</button>
+    <button class="filter-chip" onclick="filterListings(this, 'market-research')">Market Research</button>
+    <button class="filter-chip" onclick="filterListings(this, 'financial')">Financial</button>
+    <button class="filter-chip" onclick="filterListings(this, 'tech')">Technology</button>
+    <button class="filter-chip" onclick="filterListings(this, 'business')">Business</button>
+    <button class="filter-chip" onclick="filterListings(this, 'legal')">Legal & Compliance</button>
+    <button class="filter-chip" onclick="filterListings(this, 'science')">Science & Research</button>
+  </div>
+  <div class="listings-grid" id="listingsGrid">
+    <!-- Cards injected by JS -->
+  </div>
+  <div style="text-align:center; margin-top: 36px;">
+    <button class="btn btn-ghost btn-lg">Load more listings</button>
+  </div>
+</section>
+
+<!-- SELL CTA -->
+<div class="sell-cta">
+  <div>
+    <h2>Your knowledge is worth money.</h2>
+    <p>Thousands of buyers are looking for exactly what you know. List your first item for free — no subscription required.</p>
+  </div>
+  <button class="btn btn-white btn-lg" onclick="openSellModal()">Start selling today →</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">InfoVault</div>
+        <div class="footer-tagline">The premier marketplace for exclusive research, data, and expert knowledge.</div>
+      </div>
+      <div class="footer-col">
+        <h4>Marketplace</h4>
+        <ul>
+          <li><a href="#">Browse all</a></li>
+          <li><a href="#">Market research</a></li>
+          <li><a href="#">Financial data</a></li>
+          <li><a href="#">Industry reports</a></li>
+          <li><a href="#">Templates</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Sellers</h4>
+        <ul>
+          <li><a href="#">Start selling</a></li>
+          <li><a href="#">Pricing & fees</a></li>
+          <li><a href="#">Seller dashboard</a></li>
+          <li><a href="#">Payout options</a></li>
+          <li><a href="#">Success stories</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Trust & safety</a></li>
+          <li><a href="#">Privacy policy</a></li>
+          <li><a href="#">Terms of service</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 InfoVault, Inc. All rights reserved.</span>
+      <div class="trust-badges" style="color: rgba(255,255,255,0.35)">
+        <span>🔒 SSL secured</span>
+        <span>💳 PCI compliant</span>
+        <span>🛡️ Buyer guarantee</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- BUY MODAL -->
+<div class="modal-overlay" id="buyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="buyModalTitle">Purchase listing</div>
+        <div class="modal-sub">Instant delivery after payment</div>
+      </div>
+      <button class="close-btn" onclick="closeModal('buyModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="purchase-summary">
+        <div class="purchase-row"><span id="buyModalItem">Item</span><span id="buyModalPrice">$0</span></div>
+        <div class="purchase-row"><span>Platform fee</span><span>$0</span></div>
+        <div class="purchase-row total"><span>Total</span><span id="buyModalTotal">$0</span></div>
+      </div>
+      <div style="font-size: 0.82rem; font-weight: 600; color: var(--ink-2); margin-bottom: 10px;">Payment method</div>
+      <div class="payment-methods">
+        <div class="pay-method active" onclick="selectPayment(this)">💳 Card</div>
+        <div class="pay-method" onclick="selectPayment(this)">🏦 Bank</div>
+        <div class="pay-method" onclick="selectPayment(this)">🅿️ PayPal</div>
+        <div class="pay-method" onclick="selectPayment(this)">₿ Crypto</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Card number</label>
+          <input class="form-control" type="text" placeholder="•••• •••• •••• ••••" maxlength="19">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Name on card</label>
+          <input class="form-control" type="text" placeholder="Full name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Expiry</label>
+          <input class="form-control" type="text" placeholder="MM / YY" maxlength="7">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CVV</label>
+          <input class="form-control" type="text" placeholder="•••" maxlength="4">
+        </div>
+      </div>
+      <div class="trust-badges" style="margin-top: 4px;">
+        <span>🔒 SSL encrypted</span>
+        <span>🛡️ Buyer guarantee</span>
+        <span>⚡ Instant access</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('buyModal')">Cancel</button>
+      <button class="btn btn-primary btn-lg" id="confirmBuyBtn" onclick="completePurchase()">Complete purchase</button>
+    </div>
+  </div>
+</div>
+
+<!-- SELL MODAL -->
+<div class="modal-overlay" id="sellModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Create a listing</div>
+        <div class="modal-sub">List your knowledge in under 5 minutes</div>
+      </div>
+      <button class="close-btn" onclick="closeModal('sellModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Listing title</label>
+        <input class="form-control" type="text" placeholder="e.g. 2024 E-commerce Conversion Rate Benchmarks">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" placeholder="Describe what buyers will receive. Be specific about scope, format, and what makes this valuable..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-control">
+            <option>Market Research</option>
+            <option>Financial Data</option>
+            <option>Technology</option>
+            <option>Business Strategy</option>
+            <option>Legal & Compliance</option>
+            <option>Science & Research</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price (USD)</label>
+          <input class="form-control" type="number" placeholder="e.g. 99" min="1">
+          <div class="form-hint">You keep 85% — we take 15%</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">File / delivery</label>
+        <div style="border: 1.5px dashed var(--border-strong); border-radius: var(--radius); padding: 28px; text-align: center; cursor: pointer; background: var(--surface-2);">
+          <div style="font-size: 1.8rem; margin-bottom: 8px;">📁</div>
+          <div style="font-size: 0.88rem; font-weight: 600; color: var(--ink-2);">Click to upload or drag & drop</div>
+          <div style="font-size: 0.75rem; color: var(--ink-3); margin-top: 4px;">PDF, Excel, Word, ZIP — up to 500 MB</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('sellModal')">Cancel</button>
+      <button class="btn btn-primary btn-lg" onclick="publishListing()">Publish listing →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Welcome to InfoVault</div>
+        <div class="modal-sub">Sign in or create an account</div>
+      </div>
+      <button class="close-btn" onclick="closeModal('loginModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input class="form-control" type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-direction: column; gap: 10px; align-items: stretch;">
+      <button class="btn btn-primary btn-lg" style="justify-content:center;" onclick="closeModal('loginModal'); showNotification('Signed in successfully!')">Sign in</button>
+      <button class="btn btn-ghost btn-lg" style="justify-content:center;" onclick="closeModal('loginModal'); showNotification('Account created! Welcome to InfoVault.')">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<script>
+const listings = [
+  { id:1, title:'Global VC Investment Trends Q3 2024', desc:'Comprehensive analysis of 8,000+ venture deals. Geographic breakdown, sector focus, check sizes.', price:189, category:'financial', tag:'Financial', tagColor:'#ebf2fd', tagText:'#185FA5', emoji:'📊', seller:'AV', sellerColor:'#185FA5', rating:4.9, sold:820 },
+  { id:2, title:'E-commerce UX Teardown: 50 Top Stores', desc:'Detailed analysis of checkout flows, product pages, and retention strategies from the top 50 online retailers.', price:129, category:'market-research', tag:'Market Research', tagColor:'#fdf0eb', tagText:'#c84b1c', emoji:'🛒', seller:'MK', sellerColor:'#c84b1c', rating:4.8, sold:1140 },
+  { id:3, title:'Python API Rate Limit Bypass Techniques', desc:'Advanced techniques used by engineers at top tech companies. Real code examples, battle-tested patterns.', price:59, category:'tech', tag:'Technology', tagColor:'#e8f7ef', tagText:'#1a7a4a', emoji:'⚙️', seller:'DL', sellerColor:'#1a7a4a', rating:4.7, sold:2200 },
+  { id:4, title:'GDPR Compliance Checklist & Templates', desc:'Complete legal toolkit for EU compliance. 40+ templates, audit checklists, DPA agreements. Lawyer-reviewed.', price:99, category:'legal', tag:'Legal', tagColor:'#fdf6e0', tagText:'#b07d10', emoji:'⚖️', seller:'RP', sellerColor:'#b07d10', rating:4.9, sold:340 },
+  { id:5, title:'Clinical Trial Failure Analysis 2020–24', desc:'Why 72% of clinical trials fail — comprehensive research covering Phase I–III failures with pattern analysis.', price:349, category:'science', tag:'Science', tagColor:'#EEEDFE', tagText:'#534AB7', emoji:'🧬', seller:'SF', sellerColor:'#534AB7', rating:4.6, sold:156 },
+  { id:6, title:'B2B Cold Outreach Sequence Templates', desc:'35 proven email sequences with 40%+ open rates. Tested across 12 industries. Includes A/B test data.', price:49, category:'business', tag:'Business', tagColor:'#e8f7ef', tagText:'#1a7a4a', emoji:'✉️', seller:'JR', sellerColor:'#c84b1c', rating:4.8, sold:3400 },
+];
+
+function renderListings(filter) {
+  const grid = document.getElementById('listingsGrid');
+  const filtered = filter === 'all' ? listings : listings.filter(l => l.category === filter);
+  grid.innerHTML = filtered.map(l => `
+    <div class="listing-card" onclick="openBuyModal('${l.title}', ${l.price})">
+      <div class="listing-thumb" style="background:${l.tagColor}">
+        <span style="font-size:2.8rem">${l.emoji}</span>
+      </div>
+      <div class="listing-body">
+        <div class="listing-tags">
+          <span class="tag" style="background:${l.tagColor};color:${l.tagText}">${l.tag}</span>
+        </div>
+        <div class="listing-title">${l.title}</div>
+        <div class="listing-desc">${l.desc}</div>
+        <div class="listing-footer">
+          <span class="listing-price">$${l.price}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="rating">⭐ ${l.rating}</div>
+            <div class="listing-seller">
+              <div class="avatar" style="background:${l.sellerColor}">${l.seller}</div>
+              <span>${l.sold.toLocaleString()} sold</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterListings(btn, cat) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderListings(cat);
+}
+
+function openBuyModal(title, price) {
+  document.getElementById('buyModalTitle').textContent = 'Purchase: ' + title.substring(0, 40) + (title.length > 40 ? '…' : '');
+  document.getElementById('buyModalItem').textContent = title.substring(0, 35) + (title.length > 35 ? '…' : '');
+  document.getElementById('buyModalPrice').textContent = '$' + price;
+  document.getElementById('buyModalTotal').textContent = '$' + price;
+  document.getElementById('confirmBuyBtn').textContent = 'Pay $' + price;
+  openModal('buyModal');
+}
+
+function openSellModal() { openModal('sellModal'); }
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('open'); });
+});
+
+function selectPayment(el) {
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function completePurchase() {
+  closeModal('buyModal');
+  showNotification('✓ Purchase complete! Files ready in your dashboard.');
+}
+
+function publishListing() {
+  closeModal('sellModal');
+  showNotification('✓ Listing published! It\'s now live on the marketplace.');
+}
+
+function showNotification(msg) {
+  const n = document.getElementById('notification');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3500);
+}
+
+renderListings('all');
+</script>
+</body>
+</html>
